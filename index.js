@@ -1,5 +1,5 @@
 require("dotenv").config();
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const express = require("express");
 const cors = require("cors");
 const app = express();
@@ -28,17 +28,33 @@ async function run() {
     // await client.connect();
     
     const reviewCollection = client.db('reviewDB').collection('review')
+    const watchListCollection = client.db('reviewDB').collection('review')
 
     app.get('/review', async (req,res) => {
-        const cursor = reviewCollection.find();
+        const cursor = reviewCollection.find().limit(6);
         const result = await cursor.toArray();
         res.send(result)
     })
+    app.get('/review/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await reviewCollection.findOne(query);
+      res.send(result);
+    })
+
+
 
     app.post('/review', async (req,res) => {
         const addReview = req.body;
         console.log(addReview);
         const result = await reviewCollection.insertOne(addReview)
+        res.send(result)
+    })
+
+    app.post('/watchList', async (req,res) => {
+        const addReview = req.body;
+        console.log(addReview);
+        const result = await watchListCollection.insertOne(watchListItem)
         res.send(result)
     })
 
