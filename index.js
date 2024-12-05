@@ -33,17 +33,32 @@ async function run() {
       const result = await cursor.toArray();
       res.send(result);
     });
+    app.get("/review/limit", async (req, res) => {
+      const cursor = reviewCollection.find().limit(6);
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+    app.get("/review/all", async (req, res) => {
+      const cursor = reviewCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
     app.get("/review/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await reviewCollection.findOne(query);
       res.send(result);
     });
-
+    
+    app.get("/watchList", async (req, res) => {
+      const cursor = watchListCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
     app.get("/watchList/:userEmail", async (req, res) => {
       const userEmail = req.params.userEmail;
       console.log(userEmail);
-      const query = { userEmail: userEmail }; 
+      const query = { email: userEmail }; 
       const result = await watchListCollection.find(query).toArray();
       res.send(result);
     });
