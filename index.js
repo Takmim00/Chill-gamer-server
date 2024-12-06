@@ -49,6 +49,25 @@ async function run() {
       const result = await reviewCollection.findOne(query);
       res.send(result);
     });
+    app.put("/review/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updatedReview = req.body;
+      const review = {
+        $set: {
+          coverImage: updatedReview.coverImage,
+          title: updatedReview.title,
+          description: updatedReview.description,
+          rating: updatedReview.rating,
+          year: updatedReview.year,
+          genre: updatedReview.genre,
+        },
+      };
+
+      const result = await reviewCollection.updateOne(filter, review, options);
+      res.send(result);
+    });
     
     app.get("/watchList", async (req, res) => {
       const cursor = watchListCollection.find();
@@ -62,6 +81,18 @@ async function run() {
       const result = await watchListCollection.find(query).toArray();
       res.send(result);
     });
+    app.get("/myReviews", async (req, res) => {
+      const userEmail = req.query.email;
+      const query = { email: userEmail };
+      const result = await reviewCollection.find(query).toArray();
+      res.send(result);
+    });
+    app.delete('/review/:id', async (req,res) => {
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)};
+      const result = await reviewCollection.deleteOne(query);
+      res.send(result)
+    })
 
     app.post("/review", async (req, res) => {
       const addReview = req.body;
