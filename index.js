@@ -29,7 +29,7 @@ async function run() {
     const watchListCollection = client.db("reviewDB").collection("watchList");
 
     app.get("/review", async (req, res) => {
-      const cursor = reviewCollection.find().limit(6);
+      const cursor = reviewCollection.find();
       const result = await cursor.toArray();
       res.send(result);
     });
@@ -39,7 +39,14 @@ async function run() {
       res.send(result);
     });
     app.get("/review/all", async (req, res) => {
-      const cursor = reviewCollection.find();
+      const sortField = req.query.sortField; 
+      const sortOrder = req.query.sortOrder;
+    
+      let sortQuery = {};
+      if (sortField && sortOrder) {
+        sortQuery[sortField] = sortOrder === "asc" ? 1 : -1;
+      }
+      const cursor = reviewCollection.find().sort(sortQuery);
       const result = await cursor.toArray();
       res.send(result);
     });
@@ -68,7 +75,7 @@ async function run() {
       const result = await reviewCollection.updateOne(filter, review, options);
       res.send(result);
     });
-    
+
     app.get("/watchList", async (req, res) => {
       const cursor = watchListCollection.find();
       const result = await cursor.toArray();
@@ -77,7 +84,7 @@ async function run() {
     app.get("/watchList/:userEmail", async (req, res) => {
       const userEmail = req.params.userEmail;
       console.log(userEmail);
-      const query = { email: userEmail }; 
+      const query = { email: userEmail };
       const result = await watchListCollection.find(query).toArray();
       res.send(result);
     });
@@ -87,12 +94,12 @@ async function run() {
       const result = await reviewCollection.find(query).toArray();
       res.send(result);
     });
-    app.delete('/review/:id', async (req,res) => {
+    app.delete("/review/:id", async (req, res) => {
       const id = req.params.id;
-      const query = {_id: new ObjectId(id)};
+      const query = { _id: new ObjectId(id) };
       const result = await reviewCollection.deleteOne(query);
-      res.send(result)
-    })
+      res.send(result);
+    });
 
     app.post("/review", async (req, res) => {
       const addReview = req.body;
