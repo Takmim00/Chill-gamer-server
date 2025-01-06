@@ -35,7 +35,7 @@ async function run() {
       res.send(result);
     });
     app.get("/review/limit", async (req, res) => {
-      const cursor = reviewCollection.find().limit(6);
+      const cursor = reviewCollection.find().limit(8);
       const result = await cursor.toArray();
       res.send(result);
     });
@@ -104,14 +104,12 @@ async function run() {
 
     app.post("/review", async (req, res) => {
       const addReview = req.body;
-      console.log(addReview);
       const result = await reviewCollection.insertOne(addReview);
       res.send(result);
     });
 
     app.post("/watchList", async (req, res) => {
       const watchListItem = req.body;
-      console.log(watchListItem);
       const result = await watchListCollection.insertOne(watchListItem);
       res.send(result);
     });
